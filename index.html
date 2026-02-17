@@ -879,6 +879,16 @@
                     const now = new Date();
                     const isLive = commenceTime <= now;
                     
+                    const spreadsMarket = game.bookmakers?.[0]?.markets?.find(m => m.key === 'spreads');
+                    let homeSpread = null, awaySpread = null, homeSpreadOdds = 0, awaySpreadOdds = 0;
+                    if (spreadsMarket && spreadsMarket.outcomes) {
+                        const homeSpreadOutcome = spreadsMarket.outcomes.find(o => o.name === game.home_team);
+                        const awaySpreadOutcome = spreadsMarket.outcomes.find(o => o.name === game.away_team);
+                        homeSpread = homeSpreadOutcome?.point ?? null;
+                        awaySpread = awaySpreadOutcome?.point ?? null;
+                        homeSpreadOdds = homeSpreadOutcome?.price || -110;
+                        awaySpreadOdds = awaySpreadOutcome?.price || -110;
+                    }
                     return {
                         id: game.id,
                         sport: sport,
@@ -886,6 +896,10 @@
                         awayTeam: game.away_team,
                         homeOdds: homeOdds,
                         awayOdds: awayOdds,
+                        homeSpread: homeSpread,
+                        awaySpread: awaySpread,
+                        homeSpreadOdds: homeSpreadOdds,
+                        awaySpreadOdds: awaySpreadOdds,
                         time: commenceTime.toLocaleString('en-US', { 
                             weekday: 'short',
                             month: 'short', 
@@ -1686,10 +1700,11 @@
         function GameCard({ game, onPlaceBet, userBalance, maxBet, isAdmin }) {
             const [selectedTeam, setSelectedTeam] = useState(null);
             const [betAmount, setBetAmount] = useState('');
+            const [betType, setBetType] = useState('moneyline'); // 'moneyline' or 'spread'
 
-            const handleTeamSelect = (team, odds) => {
-                if (isAdmin) return; // Admins can't bet
-                setSelectedTeam({ team, odds });
+            const handleTeamSelect = (team, odds, type, spread) => {
+                if (isAdmin) return;
+                setSelectedTeam({ team, odds, type, spread });
             };
 
             const handlePlaceBet = () => {
@@ -1712,9 +1727,9 @@
 
             const effectiveMax = Math.min(userBalance, maxBet);
             const isOverLimit = betAmount && parseFloat(betAmount) > maxBet;
+            const hasSpread = game.homeSpread !== null && game.awaySpread !== null;
 
             if (isAdmin) {
-                // Show games to admin but disable betting
                 return (
                     <div className="game-card" style={{opacity: 0.7}}>
                         <div className="game-header">
@@ -1726,27 +1741,22 @@
                             </div>
                             <span className="game-time">{game.time}</span>
                         </div>
-                        
                         <div className="teams">
                             <div className="team-row disabled">
                                 <span className="team-name">{game.awayTeam}</span>
                                 <div className="odds-container">
-                                    <span className="odds">
-                                        {game.awayOdds > 0 ? '+' : ''}{game.awayOdds}
-                                    </span>
+                                    <span className="odds">{game.awayOdds > 0 ? '+' : ''}{game.awayOdds}</span>
+                                    {hasSpread && <span style={{fontSize:'11px',color:'#999',marginLeft:'8px'}}>{game.awaySpread > 0 ? '+' : ''}{game.awaySpread}</span>}
                                 </div>
                             </div>
-                            
                             <div className="team-row disabled">
                                 <span className="team-name">{game.homeTeam}</span>
                                 <div className="odds-container">
-                                    <span className="odds">
-                                        {game.homeOdds > 0 ? '+' : ''}{game.homeOdds}
-                                    </span>
+                                    <span className="odds">{game.homeOdds > 0 ? '+' : ''}{game.homeOdds}</span>
+                                    {hasSpread && <span style={{fontSize:'11px',color:'#999',marginLeft:'8px'}}>{game.homeSpread > 0 ? '+' : ''}{game.homeSpread}</span>}
                                 </div>
                             </div>
                         </div>
-
                         <p style={{textAlign: 'center', color: '#666', fontSize: '13px', marginTop: '10px'}}>
                             Admins cannot place bets
                         </p>
@@ -1769,35 +1779,89 @@
                         <span className="game-time">{game.time}</span>
                     </div>
                     
+                    {/* Bet Type Selector */}
+                    {hasSpread && (
+                        <div style={{display:'flex',gap:'8px',marginBottom:'12px'}}>
+                            <button
+                                onClick={() => { setBetType('moneyline'); setSelectedTeam(null); }}
+                                style={{
+                                    flex:1, padding:'6px', borderRadius:'6px', border:'none', cursor:'pointer',
+                                    background: betType === 'moneyline' ? '#667eea' : '#f3f4f6',
+                                    color: betType === 'moneyline' ? 'white' : '#333',
+                                    fontWeight: betType === 'moneyline' ? '600' : '400',
+                                    fontSize: '13px'
+                                }}
+                            >Moneyline</button>
+                            <button
+                                onClick={() => { setBetType('spread'); setSelectedTeam(null); }}
+                                style={{
+                                    flex:1, padding:'6px', borderRadius:'6px', border:'none', cursor:'pointer',
+                                    background: betType === 'spread' ? '#667eea' : '#f3f4f6',
+                                    color: betType === 'spread' ? 'white' : '#333',
+                                    fontWeight: betType === 'spread' ? '600' : '400',
+                                    fontSize: '13px'
+                                }}
+                            >Spread</button>
+                        </div>
+                    )}
+
                     <div className="teams">
+                        {/* Away Team */}
                         <div 
                             className={`team-row ${selectedTeam?.team === game.awayTeam ? 'selected' : ''}`}
-                            onClick={() => game.awayOdds !== 0 && handleTeamSelect(game.awayTeam, game.awayOdds)}
+                            onClick={() => {
+                                if (betType === 'spread' && hasSpread) {
+                                    handleTeamSelect(game.awayTeam, game.awaySpreadOdds, 'spread', game.awaySpread);
+                                } else if (game.awayOdds !== 0) {
+                                    handleTeamSelect(game.awayTeam, game.awayOdds, 'moneyline', null);
+                                }
+                            }}
                         >
                             <span className="team-name">{game.awayTeam}</span>
                             <div className="odds-container">
-                                {game.awayOdds !== 0 ? (
-                                    <span className="odds">
-                                        {game.awayOdds > 0 ? '+' : ''}{game.awayOdds}
-                                    </span>
+                                {betType === 'spread' && hasSpread ? (
+                                    <div style={{textAlign:'right'}}>
+                                        <span className="odds" style={{color:'#8b5cf6'}}>
+                                            {game.awaySpread > 0 ? '+' : ''}{game.awaySpread}
+                                        </span>
+                                        <span style={{fontSize:'11px',color:'#666',display:'block'}}>
+                                            {game.awaySpreadOdds > 0 ? '+' : ''}{game.awaySpreadOdds}
+                                        </span>
+                                    </div>
+                                ) : game.awayOdds !== 0 ? (
+                                    <span className="odds">{game.awayOdds > 0 ? '+' : ''}{game.awayOdds}</span>
                                 ) : (
-                                    <span style={{color: '#999', fontSize: '12px'}}>No odds</span>
+                                    <span style={{color:'#999',fontSize:'12px'}}>No odds</span>
                                 )}
                             </div>
                         </div>
                         
+                        {/* Home Team */}
                         <div 
                             className={`team-row ${selectedTeam?.team === game.homeTeam ? 'selected' : ''}`}
-                            onClick={() => game.homeOdds !== 0 && handleTeamSelect(game.homeTeam, game.homeOdds)}
+                            onClick={() => {
+                                if (betType === 'spread' && hasSpread) {
+                                    handleTeamSelect(game.homeTeam, game.homeSpreadOdds, 'spread', game.homeSpread);
+                                } else if (game.homeOdds !== 0) {
+                                    handleTeamSelect(game.homeTeam, game.homeOdds, 'moneyline', null);
+                                }
+                            }}
                         >
                             <span className="team-name">{game.homeTeam}</span>
                             <div className="odds-container">
-                                {game.homeOdds !== 0 ? (
-                                    <span className="odds">
-                                        {game.homeOdds > 0 ? '+' : ''}{game.homeOdds}
-                                    </span>
+                                {betType === 'spread' && hasSpread ? (
+                                    <div style={{textAlign:'right'}}>
+                                        <span className="odds" style={{color:'#8b5cf6'}}>
+                                            {game.homeSpread > 0 ? '+' : ''}{game.homeSpread}
+                                        </span>
+                                        <span style={{fontSize:'11px',color:'#666',display:'block'}}>
+                                            {game.homeSpreadOdds > 0 ? '+' : ''}{game.homeSpreadOdds}
+                                        </span>
+                                    </div>
+                                ) : game.homeOdds !== 0 ? (
+                                    <span className="odds">{game.homeOdds > 0 ? '+' : ''}{game.homeOdds}</span>
                                 ) : (
-                                    <span style={{color: '#999', fontSize: '12px'}}>No odds</span>
+                                    <span style={{color:'#999',fontSize:'12px'}}>No odds</span>
                                 )}
                             </div>
                         </div>
