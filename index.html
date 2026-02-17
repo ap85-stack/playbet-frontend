@@ -1,17 +1,1846 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2299.77">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Helvetica Neue'; -webkit-text-stroke: #000000}
-    span.s1 {font-kerning: none}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayBet Live - Per-Player Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .balance {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .tier-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .tier-vip {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .tier-standard {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .tier-beginner {
+            background: #10b981;
+            color: white;
+        }
+
+        .tier-suspended {
+            background: #ef4444;
+            color: white;
+        }
+
+        .admin-badge {
+            background: #8b5cf6;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .balance-details {
+            font-size: 11px;
+            margin-top: 3px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+
+        .admin-btn {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .admin-btn:hover {
+            background: #7c3aed;
+        }
+
+        .refresh-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 500px;
+            margin: 100px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .sport-badge {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .live-badge {
+            background: #ef4444;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .game-time {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .teams {
+            margin-bottom: 20px;
+        }
+
+        .team-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #f9fafb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .team-row:hover {
+            background: #f3f4f6;
+        }
+
+        .team-row.selected {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
+        }
+
+        .team-row.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .team-name {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .odds-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .odds {
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .bookmaker-badge {
+            background: #e5e7eb;
+            color: #666;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .bet-input-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #f3f4f6;
+        }
+
+        .bet-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bet-input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .bet-btn {
+            padding: 10px 20px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .bet-btn:hover {
+            background: #059669;
+        }
+
+        .bet-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .bet-limit-warning {
+            font-size: 12px;
+            color: #f59e0b;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .potential-win {
+            text-align: center;
+            color: #10b981;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .my-bets {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .my-bets h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .bet-item {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .bet-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .bet-team {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .bet-amount {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .bet-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .alert {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #92400e;
+        }
+
+        .success {
+            background: #d1fae5;
+            border-left-color: #10b981;
+            color: #065f46;
+        }
+
+        .error {
+            background: #fee2e2;
+            border-left-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .nav-tab:hover {
+            background: #f3f4f6;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .admin-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .admin-panel h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table th {
+            background: #f9fafb;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .users-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .users-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .action-btn.edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .action-btn.edit:hover {
+            background: #2563eb;
+        }
+
+        .action-btn.suspend {
+            background: #ef4444;
+            color: white;
+        }
+
+        .action-btn.suspend:hover {
+            background: #dc2626;
+        }
+
+        .action-btn.activate {
+            background: #10b981;
+            color: white;
+        }
+
+        .action-btn.activate:hover {
+            background: #059669;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .disclaimer {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .loading-container {
+            background: white;
+            border-radius: 12px;
+            padding: 60px;
+            text-align: center;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .suspended-message {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .suspended-message h2 {
+            color: #ef4444;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .users-table {
+                font-size: 12px;
+            }
+
+            .users-table th,
+            .users-table td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
 </head>
 <body>
-<p class="p1"><span class="s1">for</span></p>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Sport key mappings
+        const SPORT_KEYS = {
+            nba: 'basketball_nba',
+            ncaab: 'basketball_ncaab',
+            nfl: 'americanfootball_nfl',
+            nhl: 'icehockey_nhl',
+            mlb: 'baseball_mlb'
+        };
+
+        // User tiers with default settings
+        const USER_TIERS = {
+            beginner: {
+                name: 'Beginner',
+                weeklyCredit: 500,
+                maxBet: 50,
+                color: '#10b981'
+            },
+            standard: {
+                name: 'Standard',
+                weeklyCredit: 1000,
+                maxBet: 100,
+                color: '#3b82f6'
+            },
+            vip: {
+                name: 'VIP',
+                weeklyCredit: 2500,
+                maxBet: 500,
+                color: '#f59e0b'
+            },
+            suspended: {
+                name: 'Suspended',
+                weeklyCredit: 0,
+                maxBet: 0,
+                color: '#ef4444'
+            }
+        };
+
+        function App() {
+            const [currentUser, setCurrentUser] = useState(null);
+            const [allUsers, setAllUsers] = useState({});
+            const [games, setGames] = useState([]);
+            const [myBets, setMyBets] = useState([]);
+            const [activeTab, setActiveTab] = useState('games');
+            const [message, setMessage] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [selectedLeague, setSelectedLeague] = useState('nba');
+            const [editingUser, setEditingUser] = useState(null);
+            const [showUserModal, setShowUserModal] = useState(false);
+
+            // Load all users from localStorage
+            useEffect(() => {
+                loadAllUsers();
+            }, []);
+
+            // Save users to localStorage whenever they change
+            useEffect(() => {
+                if (Object.keys(allUsers).length > 0) {
+                    localStorage.setItem('allUsers', JSON.stringify(allUsers));
+                }
+            }, [allUsers]);
+
+            // Check for weekly reset
+            useEffect(() => {
+                if (currentUser && !currentUser.isAdmin) {
+                    checkWeeklyReset();
+                }
+            }, [currentUser]);
+
+            const loadAllUsers = () => {
+                const saved = localStorage.getItem('allUsers');
+                if (saved) {
+                    setAllUsers(JSON.parse(saved));
+                }
+            };
+
+            const checkWeeklyReset = () => {
+                const userSettings = allUsers[currentUser.username];
+                if (!userSettings) return;
+
+                const now = new Date();
+                const lastReset = new Date(userSettings.lastReset || now);
+                
+                if (shouldResetBalance(lastReset, now, userSettings)) {
+                    resetUserBalance();
+                } else {
+                    setCurrentUser(prev => ({
+                        ...prev,
+                        ...userSettings
+                    }));
+                }
+            };
+
+            const shouldResetBalance = (lastReset, now, settings) => {
+                const resetDay = settings.resetDay || 0; // Sunday
+                const resetHour = settings.resetHour || 0; // Midnight
+                
+                const nextReset = new Date(lastReset);
+                nextReset.setDate(nextReset.getDate() + ((resetDay + 7 - nextReset.getDay()) % 7 || 7));
+                nextReset.setHours(resetHour, 0, 0, 0);
+                
+                return now >= nextReset;
+            };
+
+            const resetUserBalance = () => {
+                const userSettings = allUsers[currentUser.username];
+                const now = new Date();
+                
+                const updatedUser = {
+                    ...userSettings,
+                    balance: userSettings.weeklyCredit,
+                    lastReset: now.toISOString()
+                };
+                
+                updateUser(currentUser.username, updatedUser);
+                setCurrentUser(prev => ({
+                    ...prev,
+                    ...updatedUser
+                }));
+                
+                showMessage(`Your balance has been reset to $${userSettings.weeklyCredit}!`, 'success');
+                setMyBets([]);
+            };
+
+            const updateUser = (username, updates) => {
+                setAllUsers(prev => ({
+                    ...prev,
+                    [username]: {
+                        ...prev[username],
+                        ...updates
+                    }
+                }));
+            };
+
+            // Fetch games
+            useEffect(() => {
+                if (currentUser && currentUser.tier !== 'suspended') {
+                    fetchGames();
+                }
+            }, [selectedLeague, currentUser]);
+
+            const fetchGames = async () => {
+                setLoading(true);
+                try {
+                    const backendUrl = 'http://localhost:3001';
+                    const url = `${backendUrl}/api/odds/${selectedLeague}`;
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Server error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const data = result.data;
+
+                    const formattedGames = formatGamesFromAPI(data, selectedLeague.toUpperCase());
+                    setGames(formattedGames);
+                    
+                    if (formattedGames.length > 0) {
+                        showMessage(`Loaded ${formattedGames.length} live games!`, 'success');
+                    }
+                } catch (error) {
+                    console.error('Error fetching games:', error);
+                    showMessage('Failed to load games. Using demo data.', 'error');
+                    loadSampleGames();
+                }
+                setLoading(false);
+            };
+
+            const formatGamesFromAPI = (apiData, sport) => {
+                return apiData.map(game => {
+                    const h2hMarket = game.bookmakers?.[0]?.markets?.find(m => m.key === 'h2h');
+                    
+                    let homeOdds = 0;
+                    let awayOdds = 0;
+                    
+                    if (h2hMarket && h2hMarket.outcomes) {
+                        const homeOutcome = h2hMarket.outcomes.find(o => o.name === game.home_team);
+                        const awayOutcome = h2hMarket.outcomes.find(o => o.name === game.away_team);
+                        homeOdds = homeOutcome?.price || 0;
+                        awayOdds = awayOutcome?.price || 0;
+                    }
+
+                    const commenceTime = new Date(game.commence_time);
+                    const now = new Date();
+                    const isLive = commenceTime <= now;
+                    
+                    return {
+                        id: game.id,
+                        sport: sport,
+                        homeTeam: game.home_team,
+                        awayTeam: game.away_team,
+                        homeOdds: homeOdds,
+                        awayOdds: awayOdds,
+                        time: commenceTime.toLocaleString('en-US', { 
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit'
+                        }),
+                        status: isLive ? 'live' : 'upcoming',
+                        bookmaker: game.bookmakers?.[0]?.title || 'Multiple Books'
+                    };
+                });
+            };
+
+            const loadSampleGames = () => {
+                const now = new Date();
+                const today = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                
+                const sampleGames = {
+                    nba: [
+                        {
+                            id: 'demo1',
+                            sport: 'NBA',
+                            homeTeam: 'Los Angeles Lakers',
+                            awayTeam: 'Boston Celtics',
+                            homeOdds: -145,
+                            awayOdds: 125,
+                            time: `${today} 7:30 PM`,
+                            status: 'upcoming',
+                            bookmaker: 'Demo Data'
+                        }
+                    ],
+                    ncaab: [
+                        {
+                            id: 'demo_ncaab1',
+                            sport: 'NCAAB',
+                            homeTeam: 'Duke Blue Devils',
+                            awayTeam: 'North Carolina Tar Heels',
+                            homeOdds: -165,
+                            awayOdds: 140,
+                            time: `${today} 7:00 PM`,
+                            status: 'upcoming',
+                            bookmaker: 'Demo Data'
+                        }
+                    ],
+                    nfl: [
+                        {
+                            id: 'demo2',
+                            sport: 'NFL',
+                            homeTeam: 'Kansas City Chiefs',
+                            awayTeam: 'Buffalo Bills',
+                            homeOdds: -125,
+                            awayOdds: 105,
+                            time: 'Sunday, Feb 16 1:00 PM',
+                            status: 'upcoming',
+                            bookmaker: 'Demo Data'
+                        }
+                    ],
+                    nhl: [
+                        {
+                            id: 'demo3',
+                            sport: 'NHL',
+                            homeTeam: 'Toronto Maple Leafs',
+                            awayTeam: 'Montreal Canadiens',
+                            homeOdds: -190,
+                            awayOdds: 160,
+                            time: `${today} 7:00 PM`,
+                            status: 'upcoming',
+                            bookmaker: 'Demo Data'
+                        }
+                    ],
+                    mlb: [
+                        {
+                            id: 'demo4',
+                            sport: 'MLB',
+                            homeTeam: 'New York Yankees',
+                            awayTeam: 'Boston Red Sox',
+                            homeOdds: -135,
+                            awayOdds: 115,
+                            time: 'Spring Training',
+                            status: 'scheduled',
+                            bookmaker: 'Demo Data'
+                        }
+                    ]
+                };
+
+                setGames(sampleGames[selectedLeague] || sampleGames.nba);
+            };
+
+            const handleLogin = (username, isAdmin = false) => {
+                if (isAdmin) {
+                    setCurrentUser({
+                        username,
+                        isAdmin: true
+                    });
+                    showMessage('Welcome Admin!', 'success');
+                } else {
+                    // Check if user exists
+                    let userSettings = allUsers[username];
+                    
+                    if (!userSettings) {
+                        // New user - create with default tier
+                        userSettings = {
+                            username,
+                            tier: 'standard',
+                            weeklyCredit: USER_TIERS.standard.weeklyCredit,
+                            maxBet: USER_TIERS.standard.maxBet,
+                            balance: USER_TIERS.standard.weeklyCredit,
+                            lastReset: new Date().toISOString(),
+                            resetDay: 0,
+                            resetHour: 0,
+                            totalBets: 0,
+                            totalWagered: 0
+                        };
+                        
+                        updateUser(username, userSettings);
+                    }
+                    
+                    setCurrentUser({
+                        ...userSettings,
+                        isAdmin: false
+                    });
+                    
+                    showMessage(`Welcome back, ${username}!`, 'success');
+                }
+            };
+
+            const handleLogout = () => {
+                if (currentUser && !currentUser.isAdmin) {
+                    updateUser(currentUser.username, {
+                        balance: currentUser.balance,
+                        lastReset: currentUser.lastReset
+                    });
+                }
+                setCurrentUser(null);
+                setMyBets([]);
+                setActiveTab('games');
+                setGames([]);
+            };
+
+            const placeBet = (gameId, team, amount, odds) => {
+                const userSettings = allUsers[currentUser.username];
+                
+                if (amount > userSettings.maxBet) {
+                    showMessage(`Your maximum bet is $${userSettings.maxBet}`, 'error');
+                    return;
+                }
+
+                if (amount > currentUser.balance) {
+                    showMessage('Insufficient balance!', 'error');
+                    return;
+                }
+
+                if (amount < 1) {
+                    showMessage('Minimum bet is $1', 'error');
+                    return;
+                }
+
+                const game = games.find(g => g.id === gameId);
+                const potentialWin = calculatePotentialWin(amount, odds);
+
+                const newBet = {
+                    id: Date.now(),
+                    gameId,
+                    sport: game.sport,
+                    game: `${game.awayTeam} @ ${game.homeTeam}`,
+                    team,
+                    amount,
+                    odds,
+                    potentialWin,
+                    time: new Date().toLocaleString(),
+                    bookmaker: game.bookmaker
+                };
+
+                setMyBets([...myBets, newBet]);
+                
+                const newBalance = currentUser.balance - amount;
+                setCurrentUser(prev => ({
+                    ...prev,
+                    balance: newBalance
+                }));
+                
+                updateUser(currentUser.username, {
+                    balance: newBalance,
+                    totalBets: (userSettings.totalBets || 0) + 1,
+                    totalWagered: (userSettings.totalWagered || 0) + amount
+                });
+                
+                showMessage(`Bet placed! $${amount} on ${team}`, 'success');
+            };
+
+            const calculatePotentialWin = (amount, odds) => {
+                if (odds > 0) {
+                    return amount * (odds / 100);
+                } else {
+                    return amount * (100 / Math.abs(odds));
+                }
+            };
+
+            const showMessage = (text, type) => {
+                setMessage({ text, type });
+                setTimeout(() => setMessage(null), 5000);
+            };
+
+            if (!currentUser) {
+                return <LoginScreen onLogin={handleLogin} />;
+            }
+
+            if (currentUser.tier === 'suspended' && !currentUser.isAdmin) {
+                return (
+                    <div className="container">
+                        <div className="suspended-message">
+                            <h2>Account Suspended</h2>
+                            <p style={{color: '#666', marginBottom: '20px'}}>
+                                Your account has been suspended by an administrator.
+                            </p>
+                            <p style={{color: '#666', marginBottom: '20px'}}>
+                                Please contact support for more information.
+                            </p>
+                            <button className="btn logout-btn" onClick={handleLogout}>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <div className="logo">⚡ PlayBet Live</div>
+                        <div className="user-info">
+                            <div style={{color: '#666', fontWeight: '600'}}>
+                                {currentUser.username}
+                                {currentUser.isAdmin && <span className="admin-badge" style={{marginLeft: '10px'}}>ADMIN</span>}
+                                {!currentUser.isAdmin && currentUser.tier && (
+                                    <span className={`tier-badge tier-${currentUser.tier}`} style={{marginLeft: '10px'}}>
+                                        {USER_TIERS[currentUser.tier]?.name || currentUser.tier}
+                                    </span>
+                                )}
+                            </div>
+                            {!currentUser.isAdmin && (
+                                <div className="balance">
+                                    ${currentUser.balance?.toFixed(2) || '0.00'}
+                                    <div className="balance-details">
+                                        Max Bet: ${allUsers[currentUser.username]?.maxBet || 0}
+                                    </div>
+                                </div>
+                            )}
+                            {currentUser.isAdmin && (
+                                <button 
+                                    className="btn admin-btn" 
+                                    onClick={() => setActiveTab('admin')}
+                                >
+                                    👥 Manage Users
+                                </button>
+                            )}
+                            <button className="btn refresh-btn" onClick={fetchGames} disabled={loading}>
+                                {loading ? '⏳' : '🔄'} Refresh
+                            </button>
+                            <button className="btn logout-btn" onClick={handleLogout}>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+
+                    {message && (
+                        <div className={`alert ${message.type === 'success' ? 'success' : message.type === 'error' ? 'error' : ''}`}>
+                            {message.text}
+                        </div>
+                    )}
+
+                    <div className="nav-tabs">
+                        <button 
+                            className={`nav-tab ${activeTab === 'games' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('games')}
+                        >
+                            📊 Games
+                        </button>
+                        {!currentUser.isAdmin && (
+                            <button 
+                                className={`nav-tab ${activeTab === 'mybets' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('mybets')}
+                            >
+                                🎯 My Bets ({myBets.length})
+                            </button>
+                        )}
+                        {currentUser.isAdmin && (
+                            <>
+                                <button 
+                                    className={`nav-tab ${activeTab === 'admin' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('admin')}
+                                >
+                                    👥 User Management
+                                </button>
+                                <button 
+                                    className={`nav-tab ${activeTab === 'stats' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('stats')}
+                                >
+                                    📊 Statistics
+                                </button>
+                            </>
+                        )}
+                    </div>
+
+                    {activeTab === 'admin' && currentUser.isAdmin && (
+                        <AdminPanel 
+                            users={allUsers}
+                            onEditUser={(username) => {
+                                setEditingUser(allUsers[username]);
+                                setShowUserModal(true);
+                            }}
+                            onSuspendUser={(username) => {
+                                updateUser(username, { tier: 'suspended', maxBet: 0 });
+                                showMessage(`${username} has been suspended`, 'success');
+                            }}
+                            onActivateUser={(username) => {
+                                updateUser(username, { tier: 'standard', maxBet: USER_TIERS.standard.maxBet });
+                                showMessage(`${username} has been activated`, 'success');
+                            }}
+                        />
+                    )}
+
+                    {activeTab === 'stats' && currentUser.isAdmin && (
+                        <StatsPanel users={allUsers} />
+                    )}
+
+                    {activeTab === 'games' && (
+                        <>
+                            <div className="nav-tabs">
+                                <button 
+                                    className={`nav-tab ${selectedLeague === 'nba' ? 'active' : ''}`}
+                                    onClick={() => setSelectedLeague('nba')}
+                                >
+                                    🏀 NBA
+                                </button>
+                                <button 
+                                    className={`nav-tab ${selectedLeague === 'ncaab' ? 'active' : ''}`}
+                                    onClick={() => setSelectedLeague('ncaab')}
+                                >
+                                    🎓 NCAAB
+                                </button>
+                                <button 
+                                    className={`nav-tab ${selectedLeague === 'nfl' ? 'active' : ''}`}
+                                    onClick={() => setSelectedLeague('nfl')}
+                                >
+                                    🏈 NFL
+                                </button>
+                                <button 
+                                    className={`nav-tab ${selectedLeague === 'nhl' ? 'active' : ''}`}
+                                    onClick={() => setSelectedLeague('nhl')}
+                                >
+                                    🏒 NHL
+                                </button>
+                                <button 
+                                    className={`nav-tab ${selectedLeague === 'mlb' ? 'active' : ''}`}
+                                    onClick={() => setSelectedLeague('mlb')}
+                                >
+                                    ⚾ MLB
+                                </button>
+                            </div>
+
+                            {loading ? (
+                                <div className="loading-container">
+                                    <div className="spinner"></div>
+                                    <div style={{fontSize: '18px', fontWeight: '600'}}>Loading live games...</div>
+                                </div>
+                            ) : (
+                                <div className="games-grid">
+                                    {games.length === 0 ? (
+                                        <div style={{
+                                            gridColumn: '1 / -1',
+                                            background: 'white',
+                                            borderRadius: '12px',
+                                            padding: '40px',
+                                            textAlign: 'center',
+                                            color: '#666'
+                                        }}>
+                                            No games available. Try refreshing or select a different league!
+                                        </div>
+                                    ) : (
+                                        games.map(game => (
+                                            <GameCard 
+                                                key={game.id} 
+                                                game={game} 
+                                                onPlaceBet={placeBet}
+                                                userBalance={currentUser.balance || 0}
+                                                maxBet={allUsers[currentUser.username]?.maxBet || 0}
+                                                isAdmin={currentUser.isAdmin}
+                                            />
+                                        ))
+                                    )}
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {activeTab === 'mybets' && !currentUser.isAdmin && (
+                        <div className="my-bets">
+                            <h2>My Active Bets</h2>
+                            {myBets.length === 0 ? (
+                                <p style={{color: '#666', textAlign: 'center', padding: '40px'}}>
+                                    No bets placed yet. Check out the available games!
+                                </p>
+                            ) : (
+                                myBets.map(bet => (
+                                    <div key={bet.id} className="bet-item">
+                                        <div className="bet-item-header">
+                                            <span className="bet-team">{bet.team}</span>
+                                            <span className="bet-amount">${bet.amount.toFixed(2)}</span>
+                                        </div>
+                                        <div className="bet-details">
+                                            <span>{bet.sport}: {bet.game}</span>
+                                            <span>Odds: {bet.odds > 0 ? '+' : ''}{bet.odds}</span>
+                                        </div>
+                                        <div className="bet-details">
+                                            <span style={{fontSize: '12px'}}>{bet.bookmaker}</span>
+                                            <span style={{color: '#10b981'}}>
+                                                To Win: ${bet.potentialWin.toFixed(2)}
+                                            </span>
+                                        </div>
+                                        <div style={{fontSize: '11px', color: '#999', marginTop: '8px'}}>
+                                            {bet.time}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+
+                    {showUserModal && editingUser && (
+                        <UserEditModal
+                            user={editingUser}
+                            onClose={() => {
+                                setShowUserModal(false);
+                                setEditingUser(null);
+                            }}
+                            onSave={(updates) => {
+                                updateUser(editingUser.username, updates);
+                                setShowUserModal(false);
+                                setEditingUser(null);
+                                showMessage('User updated successfully!', 'success');
+                            }}
+                        />
+                    )}
+
+                    <div className="disclaimer">
+                        🎮 PlayBet Live - Per-Player Edition • Play Money Only • For Entertainment
+                    </div>
+                </div>
+            );
+        }
+
+        function AdminPanel({ users, onEditUser, onSuspendUser, onActivateUser }) {
+            const userList = Object.values(users).filter(u => !u.isAdmin);
+
+            return (
+                <div className="admin-panel">
+                    <h2>👥 User Management Dashboard</h2>
+                    
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-value">{userList.length}</div>
+                            <div className="stat-label">Total Users</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">
+                                {userList.filter(u => u.tier === 'vip').length}
+                            </div>
+                            <div className="stat-label">VIP Users</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">
+                                {userList.filter(u => u.tier === 'suspended').length}
+                            </div>
+                            <div className="stat-label">Suspended</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">
+                                ${userList.reduce((sum, u) => sum + (u.balance || 0), 0).toFixed(0)}
+                            </div>
+                            <div className="stat-label">Total Balances</div>
+                        </div>
+                    </div>
+
+                    {userList.length === 0 ? (
+                        <p style={{textAlign: 'center', color: '#666', padding: '40px'}}>
+                            No users yet. Users will appear here after they log in.
+                        </p>
+                    ) : (
+                        <table className="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Tier</th>
+                                    <th>Balance</th>
+                                    <th>Weekly Credit</th>
+                                    <th>Max Bet</th>
+                                    <th>Total Bets</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {userList.map(user => (
+                                    <tr key={user.username}>
+                                        <td><strong>{user.username}</strong></td>
+                                        <td>
+                                            <span className={`tier-badge tier-${user.tier || 'standard'}`}>
+                                                {USER_TIERS[user.tier]?.name || 'Standard'}
+                                            </span>
+                                        </td>
+                                        <td>${(user.balance || 0).toFixed(2)}</td>
+                                        <td>${user.weeklyCredit || 0}</td>
+                                        <td>${user.maxBet || 0}</td>
+                                        <td>{user.totalBets || 0}</td>
+                                        <td>
+                                            <button 
+                                                className="action-btn edit"
+                                                onClick={() => onEditUser(user.username)}
+                                            >
+                                                ✏️ Edit
+                                            </button>
+                                            {user.tier !== 'suspended' ? (
+                                                <button 
+                                                    className="action-btn suspend"
+                                                    onClick={() => onSuspendUser(user.username)}
+                                                >
+                                                    ⛔ Suspend
+                                                </button>
+                                            ) : (
+                                                <button 
+                                                    className="action-btn activate"
+                                                    onClick={() => onActivateUser(user.username)}
+                                                >
+                                                    ✅ Activate
+                                                </button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+            );
+        }
+
+        function StatsPanel({ users }) {
+            const userList = Object.values(users).filter(u => !u.isAdmin);
+            const totalWagered = userList.reduce((sum, u) => sum + (u.totalWagered || 0), 0);
+            const totalBets = userList.reduce((sum, u) => sum + (u.totalBets || 0), 0);
+            const avgBet = totalBets > 0 ? totalWagered / totalBets : 0;
+
+            return (
+                <div className="admin-panel">
+                    <h2>📊 Platform Statistics</h2>
+                    
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-value">{totalBets}</div>
+                            <div className="stat-label">Total Bets Placed</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">${totalWagered.toFixed(0)}</div>
+                            <div className="stat-label">Total Wagered</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">${avgBet.toFixed(2)}</div>
+                            <div className="stat-label">Average Bet</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">{userList.length}</div>
+                            <div className="stat-label">Active Users</div>
+                        </div>
+                    </div>
+
+                    <h3 style={{marginTop: '30px', marginBottom: '15px'}}>Top Bettors</h3>
+                    <table className="users-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Username</th>
+                                <th>Total Bets</th>
+                                <th>Total Wagered</th>
+                                <th>Current Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {userList
+                                .sort((a, b) => (b.totalWagered || 0) - (a.totalWagered || 0))
+                                .slice(0, 10)
+                                .map((user, index) => (
+                                    <tr key={user.username}>
+                                        <td><strong>#{index + 1}</strong></td>
+                                        <td>{user.username}</td>
+                                        <td>{user.totalBets || 0}</td>
+                                        <td>${(user.totalWagered || 0).toFixed(2)}</td>
+                                        <td>${(user.balance || 0).toFixed(2)}</td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+        }
+
+        function UserEditModal({ user, onClose, onSave }) {
+            const [formData, setFormData] = useState({
+                tier: user.tier || 'standard',
+                weeklyCredit: user.weeklyCredit || 1000,
+                maxBet: user.maxBet || 100,
+                balance: user.balance || 0,
+                resetDay: user.resetDay || 0,
+                resetHour: user.resetHour || 0
+            });
+
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+            const handleTierChange = (tier) => {
+                const tierSettings = USER_TIERS[tier];
+                setFormData({
+                    ...formData,
+                    tier,
+                    weeklyCredit: tierSettings.weeklyCredit,
+                    maxBet: tierSettings.maxBet
+                });
+            };
+
+            const handleSave = () => {
+                onSave(formData);
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h3>Edit User: {user.username}</h3>
+                        
+                        <div className="form-group">
+                            <label>User Tier</label>
+                            <select
+                                value={formData.tier}
+                                onChange={(e) => handleTierChange(e.target.value)}
+                            >
+                                <option value="beginner">Beginner ($500/week, $50 max)</option>
+                                <option value="standard">Standard ($1,000/week, $100 max)</option>
+                                <option value="vip">VIP ($2,500/week, $500 max)</option>
+                                <option value="suspended">Suspended (No access)</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Weekly Credit: ${formData.weeklyCredit}</label>
+                            <input
+                                type="range"
+                                min="100"
+                                max="10000"
+                                step="100"
+                                value={formData.weeklyCredit}
+                                onChange={(e) => setFormData({...formData, weeklyCredit: parseInt(e.target.value)})}
+                                className="slider"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Max Bet Amount: ${formData.maxBet}</label>
+                            <input
+                                type="range"
+                                min="10"
+                                max="1000"
+                                step="10"
+                                value={formData.maxBet}
+                                onChange={(e) => setFormData({...formData, maxBet: parseInt(e.target.value)})}
+                                className="slider"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Current Balance: ${formData.balance}</label>
+                            <input
+                                type="number"
+                                value={formData.balance}
+                                onChange={(e) => setFormData({...formData, balance: parseFloat(e.target.value)})}
+                                step="0.01"
+                            />
+                            <small>Manually adjust user's current balance</small>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Reset Day</label>
+                            <select
+                                value={formData.resetDay}
+                                onChange={(e) => setFormData({...formData, resetDay: parseInt(e.target.value)})}
+                            >
+                                {days.map((day, index) => (
+                                    <option key={index} value={index}>{day}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Reset Time (Hour)</label>
+                            <input
+                                type="number"
+                                min="0"
+                                max="23"
+                                value={formData.resetHour}
+                                onChange={(e) => setFormData({...formData, resetHour: parseInt(e.target.value)})}
+                            />
+                            <small>24-hour format (0 = midnight, 12 = noon)</small>
+                        </div>
+
+                        <div className="modal-actions">
+                            <button className="btn" style={{background: '#9ca3af', color: 'white'}} onClick={onClose}>
+                                Cancel
+                            </button>
+                            <button className="btn" style={{background: '#10b981', color: 'white'}} onClick={handleSave}>
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function LoginScreen({ onLogin }) {
+            const [username, setUsername] = useState('');
+            const [adminPassword, setAdminPassword] = useState('');
+            const [showAdminLogin, setShowAdminLogin] = useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (username.trim()) {
+                    if (showAdminLogin && adminPassword === 'admin123') {
+                        onLogin(username.trim(), true);
+                    } else if (showAdminLogin) {
+                        alert('Invalid admin password');
+                    } else {
+                        onLogin(username.trim(), false);
+                    }
+                }
+            };
+
+            return (
+                <div className="login-container">
+                    <h2>⚡ PlayBet Live</h2>
+                    <p style={{textAlign: 'center', color: '#666', marginBottom: '30px'}}>
+                        Per-Player Management Edition
+                    </p>
+
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label>Username</label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Enter username"
+                                required
+                            />
+                        </div>
+
+                        {showAdminLogin && (
+                            <div className="form-group">
+                                <label>Admin Password</label>
+                                <input
+                                    type="password"
+                                    value={adminPassword}
+                                    onChange={(e) => setAdminPassword(e.target.value)}
+                                    placeholder="Enter admin password"
+                                />
+                                <small>Default password: admin123</small>
+                            </div>
+                        )}
+
+                        <div className="form-group">
+                            <label>
+                                <input 
+                                    type="checkbox" 
+                                    checked={showAdminLogin}
+                                    onChange={(e) => setShowAdminLogin(e.target.checked)}
+                                    style={{marginRight: '8px', width: 'auto'}}
+                                />
+                                Login as Administrator
+                            </label>
+                        </div>
+
+                        <button type="submit" className="btn-primary">
+                            {showAdminLogin ? 'Login as Admin' : 'Start Playing'}
+                        </button>
+                    </form>
+
+                    <p style={{marginTop: '20px', textAlign: 'center', color: '#666', fontSize: '14px'}}>
+                        🎁 New users start with Standard tier ($1,000/week)
+                    </p>
+                </div>
+            );
+        }
+
+        function GameCard({ game, onPlaceBet, userBalance, maxBet, isAdmin }) {
+            const [selectedTeam, setSelectedTeam] = useState(null);
+            const [betAmount, setBetAmount] = useState('');
+
+            const handleTeamSelect = (team, odds) => {
+                if (isAdmin) return; // Admins can't bet
+                setSelectedTeam({ team, odds });
+            };
+
+            const handlePlaceBet = () => {
+                if (selectedTeam && betAmount) {
+                    onPlaceBet(game.id, selectedTeam.team, parseFloat(betAmount), selectedTeam.odds);
+                    setSelectedTeam(null);
+                    setBetAmount('');
+                }
+            };
+
+            const calculatePotentialWin = () => {
+                if (!betAmount || !selectedTeam) return 0;
+                const amount = parseFloat(betAmount);
+                if (selectedTeam.odds > 0) {
+                    return amount * (selectedTeam.odds / 100);
+                } else {
+                    return amount * (100 / Math.abs(selectedTeam.odds));
+                }
+            };
+
+            const effectiveMax = Math.min(userBalance, maxBet);
+            const isOverLimit = betAmount && parseFloat(betAmount) > maxBet;
+
+            if (isAdmin) {
+                // Show games to admin but disable betting
+                return (
+                    <div className="game-card" style={{opacity: 0.7}}>
+                        <div className="game-header">
+                            <div style={{display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap'}}>
+                                <span className="sport-badge">{game.sport}</span>
+                                {game.bookmaker && (
+                                    <span className="bookmaker-badge">{game.bookmaker}</span>
+                                )}
+                            </div>
+                            <span className="game-time">{game.time}</span>
+                        </div>
+                        
+                        <div className="teams">
+                            <div className="team-row disabled">
+                                <span className="team-name">{game.awayTeam}</span>
+                                <div className="odds-container">
+                                    <span className="odds">
+                                        {game.awayOdds > 0 ? '+' : ''}{game.awayOdds}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div className="team-row disabled">
+                                <span className="team-name">{game.homeTeam}</span>
+                                <div className="odds-container">
+                                    <span className="odds">
+                                        {game.homeOdds > 0 ? '+' : ''}{game.homeOdds}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p style={{textAlign: 'center', color: '#666', fontSize: '13px', marginTop: '10px'}}>
+                            Admins cannot place bets
+                        </p>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="game-card">
+                    <div className="game-header">
+                        <div style={{display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap'}}>
+                            <span className="sport-badge">{game.sport}</span>
+                            {game.status === 'live' && (
+                                <span className="live-badge">● LIVE</span>
+                            )}
+                            {game.bookmaker && (
+                                <span className="bookmaker-badge">{game.bookmaker}</span>
+                            )}
+                        </div>
+                        <span className="game-time">{game.time}</span>
+                    </div>
+                    
+                    <div className="teams">
+                        <div 
+                            className={`team-row ${selectedTeam?.team === game.awayTeam ? 'selected' : ''}`}
+                            onClick={() => game.awayOdds !== 0 && handleTeamSelect(game.awayTeam, game.awayOdds)}
+                        >
+                            <span className="team-name">{game.awayTeam}</span>
+                            <div className="odds-container">
+                                {game.awayOdds !== 0 ? (
+                                    <span className="odds">
+                                        {game.awayOdds > 0 ? '+' : ''}{game.awayOdds}
+                                    </span>
+                                ) : (
+                                    <span style={{color: '#999', fontSize: '12px'}}>No odds</span>
+                                )}
+                            </div>
+                        </div>
+                        
+                        <div 
+                            className={`team-row ${selectedTeam?.team === game.homeTeam ? 'selected' : ''}`}
+                            onClick={() => game.homeOdds !== 0 && handleTeamSelect(game.homeTeam, game.homeOdds)}
+                        >
+                            <span className="team-name">{game.homeTeam}</span>
+                            <div className="odds-container">
+                                {game.homeOdds !== 0 ? (
+                                    <span className="odds">
+                                        {game.homeOdds > 0 ? '+' : ''}{game.homeOdds}
+                                    </span>
+                                ) : (
+                                    <span style={{color: '#999', fontSize: '12px'}}>No odds</span>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {selectedTeam && (
+                        <div className="bet-input-section">
+                            <div className="bet-input-group">
+                                <input
+                                    type="number"
+                                    className="bet-input"
+                                    placeholder={`Bet amount (max $${maxBet})`}
+                                    value={betAmount}
+                                    onChange={(e) => setBetAmount(e.target.value)}
+                                    min="1"
+                                    max={effectiveMax}
+                                    step="0.01"
+                                />
+                                <button 
+                                    className="bet-btn"
+                                    onClick={handlePlaceBet}
+                                    disabled={!betAmount || parseFloat(betAmount) > effectiveMax || parseFloat(betAmount) < 1}
+                                >
+                                    Place Bet
+                                </button>
+                            </div>
+                            {isOverLimit && (
+                                <div className="bet-limit-warning">
+                                    ⚠️ Your maximum bet is ${maxBet}
+                                </div>
+                            )}
+                            {betAmount && parseFloat(betAmount) >= 1 && parseFloat(betAmount) <= effectiveMax && (
+                                <div className="potential-win">
+                                    💰 To Win: ${calculatePotentialWin().toFixed(2)}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
 </body>
 </html>
