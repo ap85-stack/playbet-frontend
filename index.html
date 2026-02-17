@@ -1039,7 +1039,7 @@
                 setGames([]);
             };
 
-            const placeBet = (gameId, team, amount, odds) => {
+            const placeBet = (gameId, team, amount, odds, betType = 'moneyline', spread = null) => {
                 const userSettings = allUsers[currentUser.username];
                 
                 if (amount > userSettings.maxBet) {
@@ -1307,7 +1307,25 @@
                                 myBets.map(bet => (
                                     <div key={bet.id} className="bet-item">
                                         <div className="bet-item-header">
-                                            <span className="bet-team">{bet.team}</span>
+                                            <div>
+                                                <span className="bet-team">{bet.team}</span>
+                                                {bet.betType === 'spread' && bet.spread && (
+                                                    <span style={{
+                                                        marginLeft:'8px',background:'#667eea',color:'white',
+                                                        borderRadius:'4px',padding:'2px 6px',fontSize:'11px',fontWeight:'600'
+                                                    }}>
+                                                        SPREAD {bet.spread > 0 ? '+' : ''}{bet.spread}
+                                                    </span>
+                                                )}
+                                                {(!bet.betType || bet.betType === 'moneyline') && (
+                                                    <span style={{
+                                                        marginLeft:'8px',background:'#10b981',color:'white',
+                                                        borderRadius:'4px',padding:'2px 6px',fontSize:'11px',fontWeight:'600'
+                                                    }}>
+                                                        ML
+                                                    </span>
+                                                )}
+                                            </div>
                                             <span className="bet-amount">${bet.amount.toFixed(2)}</span>
                                         </div>
                                         <div className="bet-details">
@@ -1709,7 +1727,7 @@
 
             const handlePlaceBet = () => {
                 if (selectedTeam && betAmount) {
-                    onPlaceBet(game.id, selectedTeam.team, parseFloat(betAmount), selectedTeam.odds);
+                    onPlaceBet(game.id, selectedTeam.team, parseFloat(betAmount), selectedTeam.odds, selectedTeam.type, selectedTeam.spread);
                     setSelectedTeam(null);
                     setBetAmount('');
                 }
@@ -1820,12 +1838,15 @@
                             <span className="team-name">{game.awayTeam}</span>
                             <div className="odds-container">
                                 {betType === 'spread' && hasSpread ? (
-                                    <div style={{textAlign:'right'}}>
-                                        <span className="odds" style={{color:'#8b5cf6'}}>
+                                    <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                                        <span style={{
+                                            background:'#667eea',color:'white',borderRadius:'6px',
+                                            padding:'4px 10px',fontWeight:'700',fontSize:'15px'
+                                        }}>
                                             {game.awaySpread > 0 ? '+' : ''}{game.awaySpread}
                                         </span>
-                                        <span style={{fontSize:'11px',color:'#666',display:'block'}}>
-                                            {game.awaySpreadOdds > 0 ? '+' : ''}{game.awaySpreadOdds}
+                                        <span style={{fontSize:'13px',color:'#666',fontWeight:'500'}}>
+                                            ({game.awaySpreadOdds > 0 ? '+' : ''}{game.awaySpreadOdds})
                                         </span>
                                     </div>
                                 ) : game.awayOdds !== 0 ? (
@@ -1850,12 +1871,15 @@
                             <span className="team-name">{game.homeTeam}</span>
                             <div className="odds-container">
                                 {betType === 'spread' && hasSpread ? (
-                                    <div style={{textAlign:'right'}}>
-                                        <span className="odds" style={{color:'#8b5cf6'}}>
+                                    <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                                        <span style={{
+                                            background:'#667eea',color:'white',borderRadius:'6px',
+                                            padding:'4px 10px',fontWeight:'700',fontSize:'15px'
+                                        }}>
                                             {game.homeSpread > 0 ? '+' : ''}{game.homeSpread}
                                         </span>
-                                        <span style={{fontSize:'11px',color:'#666',display:'block'}}>
-                                            {game.homeSpreadOdds > 0 ? '+' : ''}{game.homeSpreadOdds}
+                                        <span style={{fontSize:'13px',color:'#666',fontWeight:'500'}}>
+                                            ({game.homeSpreadOdds > 0 ? '+' : ''}{game.homeSpreadOdds})
                                         </span>
                                     </div>
                                 ) : game.homeOdds !== 0 ? (
