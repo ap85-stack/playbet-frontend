@@ -1343,16 +1343,23 @@ function App() {
         setAllUsers(prev => ({ ...prev, [username]: { ...prev[username], ...updates } }));
     };
 
-    const handleLogin = (username, isAdmin = false) => {
+    const handleLogin = (username, password, isAdmin = false) => {
         if (isAdmin) {
+            if (password !== 'admin123') {
+                flash('Invalid admin password', 'error');
+                return false;
+            }
             setUser({ username, isAdmin: true });
-            flash(`Welcome back, ${username}!`, 'success');
-            return;
+            flash(`Welcome Admin!`, 'success');
+            return true;
         }
+        
         let u = allUsers[username];
         if (!u) {
+            // New user - create account with password
             u = {
                 username,
+                password, // Store password (in real app, would hash this)
                 tier: 'standard',
                 weeklyCredit: 1000,
                 maxBet: 100,
@@ -1362,9 +1369,19 @@ function App() {
                 totalWagered: 0
             };
             updateUser(username, u);
+            setUser({ ...u, isAdmin: false });
+            flash(`Account created! Welcome ${username}!`, 'success');
+            return true;
+        } else {
+            // Existing user - check password
+            if (u.password !== password) {
+                flash('Invalid password', 'error');
+                return false;
+            }
+            setUser({ ...u, isAdmin: false });
+            flash(`Welcome back, ${username}!`, 'success');
+            return true;
         }
-        setUser({ ...u, isAdmin: false });
-        flash(`Welcome back, ${username}!`, 'success');
     };
 
     const handleLogout = () => {
@@ -2219,9 +2236,15 @@ function LoginScreen({ onLogin }) {
 
     const handle = (e) => {
         e.preventDefault();
-        if (!username.trim()) return;
-        if (isAdmin && password !== 'admin123') { alert('Invalid admin password'); return; }
-        onLogin(username.trim(), isAdmin);
+        if (!username.trim()) {
+            alert('Please enter a username');
+            return;
+        }
+        if (!password) {
+            alert('Please enter a password');
+            return;
+        }
+        onLogin(username.trim(), password, isAdmin);
     };
 
     return (
@@ -2244,18 +2267,22 @@ function LoginScreen({ onLogin }) {
                         />
                     </div>
 
-                    {isAdmin && (
-                        <div className="form-group">
-                            <label className="form-label">Admin Password</label>
-                            <input
-                                type="password"
-                                className="form-input"
-                                value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                placeholder="Enter password"
-                            />
-                        </div>
-                    )}
+                    <div className="form-group">
+                        <label className="form-label">Password</label>
+                        <input
+                            type="password"
+                            className="form-input"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            placeholder={isAdmin ? "Admin password" : "Enter your password"}
+                            required
+                        />
+                        {!isAdmin && (
+                            <div style={{fontSize:'11px', color:'var(--muted)', marginTop:'6px'}}>
+                                New users: Create a password to get started
+                            </div>
+                        )}
+                    </div>
 
                     <div className="form-group">
                         <label className="form-check">
@@ -2269,7 +2296,7 @@ function LoginScreen({ onLogin }) {
                     </div>
 
                     <button type="submit" className="login-btn">
-                        {isAdmin ? '🔐 Admin Login' : '⚡ Start Playing'}
+                        {isAdmin ? '🔐 Admin Login' : '⚡ Login / Sign Up'}
                     </button>
                 </form>
 
