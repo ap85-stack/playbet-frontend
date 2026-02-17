@@ -830,7 +830,7 @@
                 if (currentUser && currentUser.tier !== 'suspended') {
                     fetchGames();
                 }
-            }, [selectedLeague, currentUser]);
+            }, [selectedLeague, currentUser?.username]);
 
             const fetchGames = async () => {
                 setLoading(true);
