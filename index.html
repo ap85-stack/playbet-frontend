@@ -835,7 +835,7 @@
             const fetchGames = async () => {
                 setLoading(true);
                 try {
-                    const backendUrl = 'http://localhost:3001';
+                    const backendUrl = 'https://playbet-backend-production.up.railway.app' ;
                     const url = `${backendUrl}/api/odds/${selectedLeague}`;
                     
                     const response = await fetch(url);
