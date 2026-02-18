@@ -1329,7 +1329,9 @@ function App() {
             ncaab: [{ id: 'd2', sport:'NCAAB', homeTeam:'Duke Blue Devils', awayTeam:'UNC Tar Heels', homeOdds:-165, awayOdds:140, homeSpread:5, awaySpread:-5, homeSpreadOdds:-110, awaySpreadOdds:-110, ouLine:155.5, overOdds:-110, underOdds:-110, status:'upcoming', time:'Tonight 9:00 PM', bookmaker:'Demo' }],
             nfl: [{ id: 'd3', sport:'NFL', homeTeam:'Kansas City Chiefs', awayTeam:'Buffalo Bills', homeOdds:-125, awayOdds:105, homeSpread:2.5, awaySpread:-2.5, homeSpreadOdds:-115, awaySpreadOdds:-105, ouLine:50.5, overOdds:-110, underOdds:-110, status:'upcoming', time:'Sunday 4:25 PM', bookmaker:'Demo' }],
             nhl: [{ id: 'd4', sport:'NHL', homeTeam:'Toronto Maple Leafs', awayTeam:'Montreal Canadiens', homeOdds:-190, awayOdds:160, homeSpread:-1.5, awaySpread:1.5, homeSpreadOdds:115, awaySpreadOdds:-138, ouLine:6, overOdds:-115, underOdds:-105, status:'upcoming', time:'Tonight 7:00 PM', bookmaker:'Demo' }],
-            mlb: [{ id: 'd5', sport:'MLB', homeTeam:'New York Yankees', awayTeam:'Boston Red Sox', homeOdds:-135, awayOdds:115, homeSpread:-1.5, awaySpread:1.5, homeSpreadOdds:105, awaySpreadOdds:-125, ouLine:8.5, overOdds:-110, underOdds:-110, status:'upcoming', time:'Tonight 7:05 PM', bookmaker:'Demo' }]
+            mlb: [{ id: 'd5', sport:'MLB', homeTeam:'New York Yankees', awayTeam:'Boston Red Sox', homeOdds:-135, awayOdds:115, homeSpread:-1.5, awaySpread:1.5, homeSpreadOdds:105, awaySpreadOdds:-125, ouLine:8.5, overOdds:-110, underOdds:-110, status:'upcoming', time:'Tonight 7:05 PM', bookmaker:'Demo' }],
+            golf: [{ id: 'd6', sport:'PGA', homeTeam:'Scottie Scheffler', awayTeam:'Rory McIlroy', homeOdds:-180, awayOdds:150, homeSpread:null, awaySpread:null, homeSpreadOdds:0, awaySpreadOdds:0, ouLine:null, overOdds:0, underOdds:0, status:'upcoming', time:'Sunday Final Round', bookmaker:'Demo' }],
+            mma: [{ id: 'd7', sport:'UFC', homeTeam:'Alex Pereira', awayTeam:'Jamahal Hill', homeOdds:-250, awayOdds:200, homeSpread:null, awaySpread:null, homeSpreadOdds:0, awaySpreadOdds:0, ouLine:2.5, overOdds:-120, underOdds:100, status:'upcoming', time:'Saturday Main Event', bookmaker:'Demo' }]
         };
         return demos[lg] || demos.nba;
     };
@@ -1570,7 +1572,7 @@ function App() {
             {activeTab === 'games' && (
                 <>
                     <div className="league-nav">
-                        {[['nba','🏀','NBA'],['ncaab','🎓','NCAAB'],['nfl','🏈','NFL'],['nhl','🏒','NHL'],['mlb','⚾','MLB']].map(([key, icon, label]) => (
+                        {[['nba','🏀','NBA'],['ncaab','🎓','NCAAB'],['nfl','🏈','NFL'],['nhl','🏒','NHL'],['mlb','⚾','MLB'],['golf','⛳','PGA'],['mma','🥊','UFC']].map(([key, icon, label]) => (
                             <button
                                 key={key}
                                 className={`league-btn ${league === key ? 'active' : ''}`}
@@ -2233,6 +2235,21 @@ function LoginScreen({ onLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isAdmin, setIsAdmin] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
+
+    // Load remembered credentials on mount
+    useEffect(() => {
+        const remembered = localStorage.getItem('rememberedUser');
+        if (remembered) {
+            try {
+                const { username: savedUser, password: savedPass } = JSON.parse(remembered);
+                setUsername(savedUser);
+                setPassword(savedPass);
+                setRememberMe(true);
+            } catch {}
+        }
+    }, []);
 
     const handle = (e) => {
         e.preventDefault();
@@ -2244,6 +2261,14 @@ function LoginScreen({ onLogin }) {
             alert('Please enter a password');
             return;
         }
+        
+        // Save credentials if remember me is checked
+        if (rememberMe) {
+            localStorage.setItem('rememberedUser', JSON.stringify({ username: username.trim(), password }));
+        } else {
+            localStorage.removeItem('rememberedUser');
+        }
+        
         onLogin(username.trim(), password, isAdmin);
     };
 
@@ -2269,19 +2294,52 @@ function LoginScreen({ onLogin }) {
 
                     <div className="form-group">
                         <label className="form-label">Password</label>
-                        <input
-                            type="password"
-                            className="form-input"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            placeholder={isAdmin ? "Admin password" : "Enter your password"}
-                            required
-                        />
+                        <div style={{position:'relative'}}>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                className="form-input"
+                                style={{paddingRight:'45px'}}
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                placeholder={isAdmin ? "Admin password" : "Enter your password"}
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{
+                                    position:'absolute',
+                                    right:'12px',
+                                    top:'50%',
+                                    transform:'translateY(-50%)',
+                                    background:'none',
+                                    border:'none',
+                                    color:'var(--muted2)',
+                                    cursor:'pointer',
+                                    fontSize:'18px',
+                                    padding:'4px 8px',
+                                    lineHeight:'1'
+                                }}
+                            >
+                                {showPassword ? '👁️' : '👁️‍🗨️'}
+                            </button>
+                        </div>
                         {!isAdmin && (
                             <div style={{fontSize:'11px', color:'var(--muted)', marginTop:'6px'}}>
                                 New users: Create a password to get started
                             </div>
                         )}
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-check">
+                            <input
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={e => setRememberMe(e.target.checked)}
+                            />
+                            <span>Remember me</span>
+                        </label>
                     </div>
 
                     <div className="form-group">
