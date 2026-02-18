@@ -1282,10 +1282,17 @@ function App() {
             const res = await fetch(`${BACKEND}/api/odds/${league}`);
             if (!res.ok) throw new Error();
             const json = await res.json();
-            setGames(formatGames(json.data, league.toUpperCase()));
-        } catch {
-            flash('Using demo data — live odds unavailable', 'info');
-            setGames(demoGames(league));
+            const formatted = formatGames(json.data, league.toUpperCase());
+            setGames(formatted);
+            if (formatted.length > 0) {
+                flash(`Loaded ${formatted.length} live games!`, 'success');
+            } else {
+                flash('No live games available for this sport right now', 'info');
+            }
+        } catch (error) {
+            console.error('Error fetching games:', error);
+            flash('Unable to load odds. Please try again later.', 'error');
+            setGames([]);
         }
         setLoading(false);
     };
@@ -1322,19 +1329,6 @@ function App() {
             bookmaker: bm?.title || 'Multiple'
         };
     });
-
-    const demoGames = (lg) => {
-        const demos = {
-            nba: [{ id: 'd1', sport:'NBA', homeTeam:'Los Angeles Lakers', awayTeam:'Boston Celtics', homeOdds:-145, awayOdds:125, homeSpread:4.5, awaySpread:-4.5, homeSpreadOdds:-110, awaySpreadOdds:-110, ouLine:224.5, overOdds:-110, underOdds:-110, status:'upcoming', time:'Tonight 7:30 PM', bookmaker:'Demo' }],
-            ncaab: [{ id: 'd2', sport:'NCAAB', homeTeam:'Duke Blue Devils', awayTeam:'UNC Tar Heels', homeOdds:-165, awayOdds:140, homeSpread:5, awaySpread:-5, homeSpreadOdds:-110, awaySpreadOdds:-110, ouLine:155.5, overOdds:-110, underOdds:-110, status:'upcoming', time:'Tonight 9:00 PM', bookmaker:'Demo' }],
-            nfl: [{ id: 'd3', sport:'NFL', homeTeam:'Kansas City Chiefs', awayTeam:'Buffalo Bills', homeOdds:-125, awayOdds:105, homeSpread:2.5, awaySpread:-2.5, homeSpreadOdds:-115, awaySpreadOdds:-105, ouLine:50.5, overOdds:-110, underOdds:-110, status:'upcoming', time:'Sunday 4:25 PM', bookmaker:'Demo' }],
-            nhl: [{ id: 'd4', sport:'NHL', homeTeam:'Toronto Maple Leafs', awayTeam:'Montreal Canadiens', homeOdds:-190, awayOdds:160, homeSpread:-1.5, awaySpread:1.5, homeSpreadOdds:115, awaySpreadOdds:-138, ouLine:6, overOdds:-115, underOdds:-105, status:'upcoming', time:'Tonight 7:00 PM', bookmaker:'Demo' }],
-            mlb: [{ id: 'd5', sport:'MLB', homeTeam:'New York Yankees', awayTeam:'Boston Red Sox', homeOdds:-135, awayOdds:115, homeSpread:-1.5, awaySpread:1.5, homeSpreadOdds:105, awaySpreadOdds:-125, ouLine:8.5, overOdds:-110, underOdds:-110, status:'upcoming', time:'Tonight 7:05 PM', bookmaker:'Demo' }],
-            golf: [{ id: 'd6', sport:'PGA', homeTeam:'Scottie Scheffler', awayTeam:'Rory McIlroy', homeOdds:-180, awayOdds:150, homeSpread:null, awaySpread:null, homeSpreadOdds:0, awaySpreadOdds:0, ouLine:null, overOdds:0, underOdds:0, status:'upcoming', time:'Sunday Final Round', bookmaker:'Demo' }],
-            mma: [{ id: 'd7', sport:'UFC', homeTeam:'Alex Pereira', awayTeam:'Jamahal Hill', homeOdds:-250, awayOdds:200, homeSpread:null, awaySpread:null, homeSpreadOdds:0, awaySpreadOdds:0, ouLine:2.5, overOdds:-120, underOdds:100, status:'upcoming', time:'Saturday Main Event', bookmaker:'Demo' }]
-        };
-        return demos[lg] || demos.nba;
-    };
 
     const flash = (text, type = 'info') => {
         setMsg({ text, type });
@@ -1593,7 +1587,9 @@ function App() {
                             {games.length === 0 ? (
                                 <div className="no-games">
                                     <div style={{fontSize:'40px', marginBottom:'12px'}}>🎲</div>
-                                    No games available. Try refreshing or switch league.
+                                    <div style={{fontSize:'18px', fontWeight:'600', marginBottom:'8px', color:'var(--text)'}}>No Live Games Available</div>
+                                    <div style={{fontSize:'14px', color:'var(--muted)'}}>This sport doesn't have any live or upcoming games right now.</div>
+                                    <div style={{fontSize:'13px', color:'var(--muted)', marginTop:'12px'}}>Try another sport or check back later for real odds!</div>
                                 </div>
                             ) : (
                                 games.map(g => (
